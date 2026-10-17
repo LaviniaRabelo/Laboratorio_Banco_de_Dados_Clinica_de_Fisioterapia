@@ -1,0 +1,6 @@
+{
+    "host": "localhost",
+    "user": "admin_clinica",
+    "password": "admin123",
+    "database": "clinica_fisioterapia"
+}
