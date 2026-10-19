@@ -1,6 +1,6 @@
 {
-    "host": "localhost",
-    "user": "admin_clinica",
-    "password": "admin123",
-    "database": "clinica_fisioterapia"
+  "host": "localhost",
+  "user": "SEU_USUARIO_DO_BANCO",
+  "password": "SUA_SENHA_DO_BANCO",
+  "database": "clinica_fisioterapia"
 }
