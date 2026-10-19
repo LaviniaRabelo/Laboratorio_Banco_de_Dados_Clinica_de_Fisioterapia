@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="actions">
+    <div>
+        <h1>Procedimentos</h1>
+        <p class="muted">
+            Consulte e mantenha os procedimentos fisioterapêuticos.
+        </p>
+    </div>
+
+    <a href="{{ url_for('edit_procedure') }}">
+        + Novo procedimento
+    </a>
+</div>
+
+<form method="get" class="card">
+    <label for="busca">Buscar por nome</label>
+
+    <div class="actions">
+        <input
+            id="busca"
+            name="busca"
+            value="{{ search }}"
+            maxlength="100"
+            placeholder="Digite o nome do procedimento"
+        >
+
+        <button type="submit">Buscar</button>
+    </div>
+</form>
+
+{% if not procedures %}
+    <div class="card">
+        Nenhum procedimento encontrado.
+    </div>
+{% else %}
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Procedimento</th>
+                    <th>Especialidade</th>
+                    <th>Valor</th>
+                    <th>Duração</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for procedure in procedures %}
+                    <tr>
+                        <td>{{ procedure.id_procedimento }}</td>
+                        <td>{{ procedure.nome_procedimento }}</td>
+                        <td>{{ procedure.nome_especialidade }}</td>
+                        <td>
+                            R$ {{ ('%.2f'|format(procedure.valor_tabela))|replace('.', ',') }}
+                        </td>
+                        <td>{{ procedure.duracao_padrao_min }} min</td>
+                        <td>
+                            <a href="{{ url_for(
+                                'edit_procedure',
+                                procedure_id=procedure.id_procedimento
+                            ) }}">
+                                Editar
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{{ url_for(
+                                    'delete_procedure',
+                                    procedure_id=procedure.id_procedimento
+                                ) }}"
+                                style="display:inline"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
+
+                                <button type="submit">
+                                    Excluir
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+{% endblock %}

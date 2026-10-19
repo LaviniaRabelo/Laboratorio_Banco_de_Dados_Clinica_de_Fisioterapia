@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<a href="{{ url_for('insurances') }}">← Voltar para convênios</a>
+<h1>{{ 'Editar convênio' if insurance_id else 'Novo convênio' }}</h1>
+<p>Os campos com * são obrigatórios.</p>
+
+{% if errors %}
+    <div class="notice error" role="alert">
+        <strong>Confira os dados:</strong>
+        <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+    </div>
+{% endif %}
+
+<form method="post" class="card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2>Dados do convênio</h2>
+    <div class="grid">
+        <div class="wide">
+            <label for="nome_convenio">Nome do convênio *</label>
+            <input id="nome_convenio" name="nome_convenio" value="{{ insurance.nome_convenio or '' }}" maxlength="100" required>
+        </div>
+        <div>
+            <label for="registro_ans">Registro ANS</label>
+            <input id="registro_ans" name="registro_ans" value="{{ insurance.registro_ans or '' }}" maxlength="20" placeholder="Ex.: ANS-000111">
+        </div>
+        <div>
+            <label for="telefone_contato">Telefone de contato</label>
+            <input id="telefone_contato" name="telefone_contato" value="{{ insurance.telefone_contato or '' }}" maxlength="20" placeholder="Ex.: (61) 3000-1111">
+        </div>
+    </div>
+    <div class="actions">
+        <button type="submit">Salvar convênio</button>
+        <a href="{{ url_for('insurances') }}">Cancelar</a>
+    </div>
+</form>
+{% endblock %}

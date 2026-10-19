@@ -1,0 +1,408 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='agendamento_calendario.css') }}">
+
+<a href="{{ url_for('appointments') }}">← Voltar para agendamentos</a>
+
+<h1>Novo agendamento</h1>
+
+<p>
+    Pesquise o paciente e o fisioterapeuta diretamente no campo. Depois escolha
+    sala, procedimento(s) e um dia/horário disponível no calendário.
+</p>
+
+{% if errors %}
+    <div class="notice error" role="alert">
+        <strong>Não foi possível agendar:</strong>
+        <ul>
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<details class="card">
+    <summary><strong>+ Cadastrar novo paciente nesta tela</strong></summary>
+    <p class="muted">
+        Cadastre os dados essenciais agora. Os demais podem ser completados depois.
+    </p>
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="quick_patient">
+        <div class="grid">
+            <div class="wide">
+                <label for="qp_nome">Nome completo *</label>
+                <input id="qp_nome" name="qp_nome" maxlength="120" required>
+            </div>
+            <div>
+                <label for="qp_cpf">CPF *</label>
+                <input id="qp_cpf" name="qp_cpf" maxlength="14" inputmode="numeric" required>
+            </div>
+            <div>
+                <label for="qp_data_nascimento">Data de nascimento *</label>
+                <input id="qp_data_nascimento" name="qp_data_nascimento" class="date-mask"
+                       type="text" maxlength="10" inputmode="numeric"
+                       placeholder="DD/MM/AAAA" autocomplete="off" required>
+            </div>
+        </div>
+        <div class="actions">
+            <button type="submit">Cadastrar e selecionar paciente</button>
+        </div>
+    </form>
+</details>
+
+<form method="post" class="card" id="appointment-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="schedule">
+
+    <h2>Atendimento</h2>
+
+    <div class="grid">
+        <div class="wide autocomplete-field" data-autocomplete>
+            <label for="patient_search">Paciente *</label>
+            <input
+                id="patient_search"
+                type="search"
+                placeholder="Digite nome ou CPF"
+                autocomplete="off"
+                data-autocomplete-input
+                data-hidden-target="id_paciente"
+                aria-autocomplete="list"
+                aria-controls="patient_results"
+            >
+            <input type="hidden" id="id_paciente" name="id_paciente" value="{{ form.id_paciente }}">
+            <div id="patient_results" class="autocomplete-results" data-autocomplete-results hidden>
+                {% for patient in patients %}
+                    <button
+                        type="button"
+                        class="autocomplete-option"
+                        data-id="{{ patient.id_paciente }}"
+                        data-label="{{ patient.nome }} — CPF {{ patient.cpf }}"
+                        data-search="{{ patient.nome }} {{ patient.cpf }}"
+                    >
+                        <strong>{{ patient.nome }}</strong>
+                        <span>CPF {{ patient.cpf }}</span>
+                    </button>
+                {% endfor %}
+            </div>
+            <small class="muted">Digite algumas letras e clique no resultado desejado.</small>
+        </div>
+
+        <div class="wide autocomplete-field" data-autocomplete>
+            <label for="physio_search">Fisioterapeuta *</label>
+            <input
+                id="physio_search"
+                type="search"
+                placeholder="Digite nome, CPF ou CREFITO"
+                autocomplete="off"
+                data-autocomplete-input
+                data-hidden-target="id_fisioterapeuta"
+                aria-autocomplete="list"
+                aria-controls="physio_results"
+            >
+            <input type="hidden" id="id_fisioterapeuta" name="id_fisioterapeuta"
+                   value="{{ form.id_fisioterapeuta }}">
+            <div id="physio_results" class="autocomplete-results" data-autocomplete-results hidden>
+                {% for physio in physios %}
+                    <button
+                        type="button"
+                        class="autocomplete-option"
+                        data-id="{{ physio.id_profissional }}"
+                        data-label="{{ physio.nome }} — CPF {{ physio.cpf }} — {{ physio.numero_crefito }}"
+                        data-search="{{ physio.nome }} {{ physio.cpf }} {{ physio.numero_crefito }}"
+                        data-specialties="{{ physio.especialidades or '' }}"
+                    >
+                        <strong>{{ physio.nome }}</strong>
+                        <span>CPF {{ physio.cpf }} · {{ physio.numero_crefito }}</span>
+                    </button>
+                {% endfor %}
+            </div>
+            <small class="muted">A seleção acontece no próprio campo de pesquisa.</small>
+        </div>
+
+        <div>
+            <label for="id_sala">Sala *</label>
+            <select id="id_sala" name="id_sala" required>
+                <option value="">Selecione</option>
+                {% for room in rooms %}
+                    <option value="{{ room.id_sala }}"
+                        {% if form.id_sala == room.id_sala|string %}selected{% endif %}>
+                        {{ room.numero_sala }} — capacidade {{ room.capacidade }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <h2>Procedimentos *</h2>
+    <p id="procedure-help" class="muted">
+        Selecione primeiro o fisioterapeuta. Depois serão exibidos somente os
+        procedimentos que ele possui qualificação para realizar.
+    </p>
+
+    <div class="grid procedure-grid" id="procedure-grid">
+        {% for procedure in procedures %}
+            <label
+                class="procedure-option"
+                data-procedure-option
+                data-specialty="{{ procedure.id_especialidade_exigida }}"
+                hidden
+            >
+                <input
+                    type="checkbox"
+                    name="procedimentos"
+                    value="{{ procedure.id_procedimento }}"
+                    data-duration="{{ procedure.duracao_padrao_min }}"
+                    data-specialty="{{ procedure.id_especialidade_exigida }}"
+                    disabled
+                    {% if procedure.id_procedimento in selected_procedures %}checked{% endif %}
+                >
+                <span>
+                    <strong>{{ procedure.nome_procedimento }}</strong><br>
+                    {{ procedure.nome_especialidade }} ·
+                    {{ procedure.duracao_padrao_min }} min ·
+                    R$ {{ '%.2f'|format(procedure.valor_tabela) }}
+                </span>
+            </label>
+        {% endfor %}
+    </div>
+    <p id="procedure-empty" class="muted" hidden>
+        Este fisioterapeuta não possui procedimentos disponíveis cadastrados.
+    </p>
+
+    <section class="availability-picker card-soft">
+        <h2>Data e horário</h2>
+        <p class="muted">
+            O calendário só é liberado depois de escolher fisioterapeuta, sala e
+            pelo menos um procedimento. Verde = existe horário compatível; vermelho = sem vaga.
+        </p>
+
+        <div class="grid">
+            <div>
+                <label for="data_atendimento">Data selecionada</label>
+                <input id="data_atendimento" name="data_atendimento" type="text"
+                       placeholder="DD/MM/AAAA" value="{{ form.data_atendimento }}" readonly required>
+            </div>
+            <div>
+                <label for="hora_inicio">Horário selecionado</label>
+                <input id="hora_inicio" name="hora_inicio" type="text"
+                       placeholder="HH:MM (24h)" value="{{ form.hora_inicio }}" readonly required>
+            </div>
+        </div>
+
+        <div class="actions-inline">
+            <button type="button" class="secondary-button" id="open-calendar" disabled>
+                Ver dias e horários disponíveis
+            </button>
+            <span id="availability-help" class="muted">
+                Selecione fisioterapeuta, sala e procedimento(s).
+            </span>
+        </div>
+    </section>
+
+    <h2>Forma de atendimento</h2>
+    <div class="grid">
+        <label class="payment-choice">
+            <input type="radio" name="tipo_atendimento" value="particular"
+                   {% if form.tipo_atendimento != 'convenio' %}checked{% endif %}>
+            <span>
+                <strong>Particular</strong><br>
+                <span class="muted">O paciente fica responsável por 100% do valor.</span>
+            </span>
+        </label>
+
+        <label class="payment-choice">
+            <input type="radio" name="tipo_atendimento" value="convenio"
+                   {% if form.tipo_atendimento == 'convenio' %}checked{% endif %}>
+            <span>
+                <strong>Convênio</strong><br>
+                <span class="muted">A cobertura cadastrada será usada no rateio.</span>
+            </span>
+        </label>
+    </div>
+
+    <div id="insurance-area" class="insurance-box"
+         {% if form.tipo_atendimento != 'convenio' %}hidden{% endif %}>
+        <label for="id_convenio">Convênio do paciente *</label>
+        <select id="id_convenio" name="id_convenio">
+            <option value="">Selecione o convênio</option>
+            {% for link in insurance_links %}
+                <option
+                    value="{{ link.id_convenio }}"
+                    data-patient="{{ link.id_paciente }}"
+                    data-start="{{ link.data_inicio }}"
+                    data-end="{{ link.data_fim or '' }}"
+                    {% if form.id_convenio == link.id_convenio|string %}selected{% endif %}
+                >
+                    {{ link.nome_convenio }} — carteirinha {{ link.numero_carteirinha }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <p id="insurance-empty" class="notice warning" hidden>
+            Este paciente não possui convênio válido para a data escolhida.
+            Você pode vincular um plano abaixo.
+        </p>
+
+        <details class="inline-details">
+            <summary><strong>+ Vincular convênio ao paciente</strong></summary>
+            <div class="grid compact-grid">
+                <div>
+                    <label for="qi_id_convenio">Convênio</label>
+                    <select id="qi_id_convenio" name="qi_id_convenio">
+                        <option value="">Selecione</option>
+                        {% for insurance in all_insurances %}
+                            <option value="{{ insurance.id_convenio }}">
+                                {{ insurance.nome_convenio }}
+                                {% if insurance.registro_ans %} — ANS {{ insurance.registro_ans }}{% endif %}
+                            </option>
+                        {% else %}
+                            <option value="" disabled>
+                                Nenhum convênio cadastrado no banco
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="qi_carteirinha">Carteirinha</label>
+                    <input id="qi_carteirinha" name="qi_carteirinha" maxlength="30">
+                </div>
+                <div>
+                    <label for="qi_data_validade">Validade do plano/carteirinha *</label>
+                    <input id="qi_data_validade" name="qi_data_validade" class="date-mask"
+                           type="text" maxlength="10" inputmode="numeric"
+                           placeholder="DD/MM/AAAA" autocomplete="off">
+                    <small class="muted">
+                        O plano será considerado ativo até esta data.
+                    </small>
+                </div>
+            </div>
+            <button type="submit" name="quick_link" value="1" formnovalidate>
+                Vincular convênio
+            </button>
+        </details>
+
+        <div id="insurance-payment-note" class="notice">
+            <strong>Convênio:</strong>
+            o atendimento será faturado pelo convênio.
+            A área de pagamento do paciente não é exibida neste momento.
+        </div>
+    </div>
+
+    <section class="notice payment-box" id="payment-section"
+             {% if form.tipo_atendimento == 'convenio' %}hidden{% endif %}>
+        <h2>Pagamento do paciente</h2>
+
+        <p>
+            Informe se o valor do paciente já foi recebido ou se será pago depois.
+            Quando já estiver pago, o sistema registra o recebimento junto com o agendamento.
+        </p>
+
+        <div class="grid">
+            <label class="payment-choice">
+                <input
+                    type="radio"
+                    name="situacao_pagamento"
+                    value="pendente"
+                    {% if form.situacao_pagamento != 'pago' %}checked{% endif %}
+                >
+                <span>
+                    <strong>Pagar depois</strong><br>
+                    <span class="muted">Nenhum recebimento será registrado agora.</span>
+                </span>
+            </label>
+
+            <label class="payment-choice">
+                <input
+                    type="radio"
+                    name="situacao_pagamento"
+                    value="pago"
+                    {% if form.situacao_pagamento == 'pago' %}checked{% endif %}
+                >
+                <span>
+                    <strong>Já foi pago</strong><br>
+                    <span class="muted">Registra o pagamento junto com o agendamento.</span>
+                </span>
+            </label>
+        </div>
+
+        <div id="payment-method-area"
+             {% if form.situacao_pagamento != 'pago' %}hidden{% endif %}>
+            <label for="id_forma_pagamento">Forma de pagamento *</label>
+
+            <select id="id_forma_pagamento" name="id_forma_pagamento">
+                <option value="">Selecione</option>
+                {% for method in payment_methods %}
+                    <option
+                        value="{{ method.id_forma_pagamento }}"
+                        {% if form.id_forma_pagamento == method.id_forma_pagamento|string %}selected{% endif %}
+                    >
+                        {{ method.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <small class="muted">
+                O valor registrado será exatamente a parte de responsabilidade do paciente
+                após o rateio. Em atendimento particular, corresponde a 100% do valor.
+            </small>
+        </div>
+    </section>
+
+    <dialog id="availability-dialog" class="availability-dialog">
+        <div class="calendar-modal">
+            <div class="calendar-header">
+                <div>
+                    <h2>Disponibilidade</h2>
+                    <p class="muted">Escolha um dia verde e depois um horário em formato 24 horas.</p>
+                </div>
+                <button type="button" id="close-calendar" class="icon-button" aria-label="Fechar">×</button>
+            </div>
+
+            <div class="calendar-nav">
+                <button type="button" id="previous-month" class="secondary-button">← Mês anterior</button>
+                <strong id="calendar-title"></strong>
+                <button type="button" id="next-month" class="secondary-button">Próximo mês →</button>
+            </div>
+
+            <div class="calendar-legend">
+                <span><i class="legend-dot available"></i> Com vaga</span>
+                <span><i class="legend-dot unavailable"></i> Sem vaga</span>
+            </div>
+
+            <div class="calendar-weekdays" aria-hidden="true">
+                <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span>
+                <span>Qui</span><span>Sex</span><span>Sáb</span>
+            </div>
+
+            <div id="calendar-grid" class="calendar-grid"></div>
+            <div id="calendar-status" class="muted calendar-status"></div>
+
+            <section id="time-section" hidden>
+                <h3 id="selected-day-title">Horários disponíveis</h3>
+                <div id="time-buttons" class="time-buttons"></div>
+            </section>
+        </div>
+    </dialog>
+
+    <div class="actions">
+        <button type="submit">Agendar atendimento</button>
+        <a href="{{ url_for('appointments') }}">Cancelar</a>
+    </div>
+</form>
+
+<script src="{{ url_for('static', filename='agendamento.js') }}?v=6" defer></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const field = document.getElementById('id_fisioterapeuta');
+    if (field && typeof filterProceduresByPhysio === 'function') {
+        field.addEventListener('change', filterProceduresByPhysio);
+        filterProceduresByPhysio();
+    }
+});
+</script>
+
+{% endblock %}

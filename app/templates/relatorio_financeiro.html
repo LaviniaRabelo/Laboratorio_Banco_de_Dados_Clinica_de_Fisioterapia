@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="actions">
+    <div>
+        <h1>Relatório financeiro</h1>
+        <p class="muted">
+            Consolidado de atendimentos alimentado pela view
+            <strong>vw_financeiro_agendamento</strong>.
+        </p>
+    </div>
+</div>
+
+{% if errors %}
+    <div class="notice error" role="alert">
+        <strong>Confira os filtros:</strong>
+        <ul>
+            {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<form method="get" class="card">
+    <h2>Filtros</h2>
+    <div class="grid">
+        <div><label for="data_inicio">Data inicial</label><input id="data_inicio" name="data_inicio" value="{{ data_inicio }}" placeholder="DD/MM/AAAA" maxlength="10" required></div>
+        <div><label for="data_fim">Data final</label><input id="data_fim" name="data_fim" value="{{ data_fim }}" placeholder="DD/MM/AAAA" maxlength="10" required></div>
+        <div><label for="status">Status</label><select id="status" name="status"><option value="" {% if status == '' %}selected{% endif %}>Todos</option><option value="agendado" {% if status == 'agendado' %}selected{% endif %}>Agendado</option><option value="realizado" {% if status == 'realizado' %}selected{% endif %}>Realizado</option><option value="cancelado" {% if status == 'cancelado' %}selected{% endif %}>Cancelado</option></select></div>
+    </div>
+    <div class="actions"><button type="submit">Gerar relatório</button></div>
+</form>
+
+{% if not errors %}
+<div class="grid">
+    <div class="card"><strong>Atendimentos</strong><p>{{ summary.atendimentos }}</p></div>
+    <div class="card"><strong>Valor total</strong><p>R$ {{ '%.2f'|format(summary.valor_total) }}</p></div>
+    <div class="card"><strong>Parte dos convênios</strong><p>R$ {{ '%.2f'|format(summary.valor_convenio) }}</p></div>
+    <div class="card"><strong>Parte dos pacientes</strong><p>R$ {{ '%.2f'|format(summary.valor_paciente) }}</p></div>
+    <div class="card"><strong>Total pago</strong><p>R$ {{ '%.2f'|format(summary.total_pago) }}</p></div>
+    <div class="card"><strong>Rateios pendentes</strong><p>{{ summary.rateios_pendentes }}</p></div>
+</div>
+
+{% if rows %}
+    <div class="card">
+        <table>
+            <thead><tr><th>ID</th><th>Paciente</th><th>Data</th><th>Status</th><th>Itens</th><th>Rateio</th><th>Valor total</th><th>Convênio</th><th>Paciente</th><th>Pago</th><th>Saldo</th></tr></thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row.id_agendamento }}</td><td>{{ row.paciente }}</td><td>{{ row.data_hora_inicio.strftime('%d/%m/%Y %H:%M') }}</td><td>{{ row.status_agendamento }}</td><td>{{ row.quantidade_itens }}</td><td>{{ row.situacao_rateio }}</td>
+                        <td>{% if row.valor_total is not none %}R$ {{ '%.2f'|format(row.valor_total) }}{% else %}—{% endif %}</td>
+                        <td>{% if row.valor_convenio is not none %}R$ {{ '%.2f'|format(row.valor_convenio) }}{% else %}—{% endif %}</td>
+                        <td>{% if row.valor_paciente is not none %}R$ {{ '%.2f'|format(row.valor_paciente) }}{% else %}—{% endif %}</td>
+                        <td>R$ {{ '%.2f'|format(row.total_pago_paciente or 0) }}</td>
+                        <td>{% if row.saldo_paciente is not none %}R$ {{ '%.2f'|format(row.saldo_paciente) }}{% else %}—{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}<div class="card">Nenhum atendimento encontrado para os filtros informados.</div>{% endif %}
+{% endif %}
+{% endblock %}

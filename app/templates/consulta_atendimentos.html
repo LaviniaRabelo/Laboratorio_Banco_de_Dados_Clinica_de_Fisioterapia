@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<a href="{{ url_for('query_menu') }}">← Voltar para consultas</a>
+
+<h1>Atendimentos por período</h1>
+
+<p class="muted">
+    Consulta parametrizada com junção e agregação.
+</p>
+
+{% if errors %}
+    <div class="notice error" role="alert">
+        <strong>Confira os filtros:</strong>
+        <ul>
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<form method="get" class="card">
+    <div class="grid">
+        <div>
+            <label for="data_inicio">Data inicial</label>
+            <input
+                id="data_inicio"
+                name="data_inicio"
+                type="text"
+                maxlength="10"
+                inputmode="numeric"
+                placeholder="DD/MM/AAAA"
+                value="{{ data_inicio }}"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="data_fim">Data final</label>
+            <input
+                id="data_fim"
+                name="data_fim"
+                type="text"
+                maxlength="10"
+                inputmode="numeric"
+                placeholder="DD/MM/AAAA"
+                value="{{ data_fim }}"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="" {% if status == '' %}selected{% endif %}>Todos</option>
+                <option value="agendado" {% if status == 'agendado' %}selected{% endif %}>Agendado</option>
+                <option value="realizado" {% if status == 'realizado' %}selected{% endif %}>Realizado</option>
+                <option value="cancelado" {% if status == 'cancelado' %}selected{% endif %}>Cancelado</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button type="submit">Consultar</button>
+    </div>
+</form>
+
+<div class="card">
+    {% if rows %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Início</th>
+                    <th>Paciente</th>
+                    <th>Fisioterapeuta</th>
+                    <th>Sala</th>
+                    <th>Status</th>
+                    <th>Procedimentos</th>
+                    <th>Valor total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row.id_agendamento }}</td>
+                        <td>{{ row.data_hora_inicio.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ row.paciente }}</td>
+                        <td>{{ row.fisioterapeuta }}</td>
+                        <td>{{ row.numero_sala }}</td>
+                        <td>{{ row.status }}</td>
+                        <td>{{ row.quantidade_procedimentos }}</td>
+                        <td>R$ {{ '%.2f'|format(row.valor_total)|replace('.', ',') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif not errors %}
+        <p>Nenhum atendimento encontrado para os filtros informados.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

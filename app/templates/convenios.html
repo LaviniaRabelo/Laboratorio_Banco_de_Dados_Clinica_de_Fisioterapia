@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="actions">
+    <div>
+        <h1>Convênios</h1>
+        <p class="muted">Consulte e mantenha as operadoras cadastradas na clínica.</p>
+    </div>
+    <a href="{{ url_for('edit_insurance') }}">+ Novo convênio</a>
+</div>
+
+<form method="get" class="card">
+    <label for="busca">Buscar por nome ou registro ANS</label>
+    <div class="actions">
+        <input id="busca" name="busca" value="{{ search }}" maxlength="100" placeholder="Digite o nome do convênio ou registro ANS">
+        <button type="submit">Buscar</button>
+    </div>
+</form>
+
+{% if not insurances %}
+    <div class="card">Nenhum convênio encontrado.</div>
+{% else %}
+    <div class="card">
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Convênio</th><th>Registro ANS</th><th>Telefone</th><th>Ações</th></tr>
+            </thead>
+            <tbody>
+                {% for insurance in insurances %}
+                    <tr>
+                        <td>{{ insurance.id_convenio }}</td>
+                        <td>{{ insurance.nome_convenio }}</td>
+                        <td>{{ insurance.registro_ans or '—' }}</td>
+                        <td>{{ insurance.telefone_contato or '—' }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_insurance', insurance_id=insurance.id_convenio) }}">Editar</a>
+                            <form method="post" action="{{ url_for('delete_insurance', insurance_id=insurance.id_convenio) }}" style="display:inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit">Excluir</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock %}

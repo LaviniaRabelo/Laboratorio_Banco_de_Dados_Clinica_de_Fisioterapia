@@ -1,0 +1,3 @@
+{% extends 'base.html' %}{% block title %}Entrar · Clínica{% endblock %}{% block content %}
+<section class="login card"><p class="eyebrow">BEM-VINDO</p><h1>Acesso ao sistema</h1><p>Entre para gerenciar os pacientes da clínica.</p><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label for="usuario">Usuário</label><input id="usuario" name="usuario" autocomplete="username" required autofocus><label for="senha">Senha</label><input id="senha" type="password" name="senha" autocomplete="current-password" required><button type="submit">Entrar</button></form></section>
+{% endblock %}

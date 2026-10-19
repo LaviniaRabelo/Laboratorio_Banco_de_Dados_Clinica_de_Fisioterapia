@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Movimento Vital | Fisioterapia{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+{% set endpoint = request.endpoint or '' %}
+<body class="{% if session.get('user') %}app-shell{% else %}auth-shell{% endif %} endpoint-{{ endpoint|replace('_', '-') }}">
+
+{% if session.get('user') %}
+<aside class="sidebar">
+    <a class="sidebar-logo" href="{{ url_for('patients') }}" aria-label="Movimento Vital Fisioterapia">
+        <img src="{{ url_for('static', filename='logo_clinica_movimento_vital.png') }}" alt="Movimento Vital Fisioterapia">
+    </a>
+
+    <nav class="sidebar-nav" aria-label="Navegação principal">
+        <span class="nav-section">GESTÃO</span>
+
+        <a class="nav-item {% if endpoint == 'patients' or endpoint.startswith('patient_') %}active{% endif %}" href="{{ url_for('patients') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Pacientes</span>
+        </a>
+
+        <a class="nav-item {% if endpoint == 'appointments' or endpoint == 'new_appointment' or endpoint.startswith('appointment_') %}active{% endif %}" href="{{ url_for('appointments') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v15H3V6a2 2 0 0 1 2-2Z"/></svg>
+            <span>Agendamentos</span>
+        </a>
+
+        <a class="nav-item {% if endpoint == 'rooms' or endpoint.startswith('room_') %}active{% endif %}" href="{{ url_for('rooms') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></svg>
+            <span>Salas</span>
+        </a>
+
+        <a class="nav-item {% if endpoint == 'procedures' or endpoint.startswith('procedure_') or endpoint == 'edit_procedure' %}active{% endif %}" href="{{ url_for('procedures') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 12h6M12 9v6M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/></svg>
+            <span>Procedimentos</span>
+        </a>
+
+        <a class="nav-item {% if endpoint == 'insurances' or endpoint.startswith('insurance_') %}active{% endif %}" href="{{ url_for('insurances') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7 9 18l-5-5M4 4h16v16H4z"/></svg>
+            <span>Convênios</span>
+        </a>
+
+        <span class="nav-section">ANÁLISES</span>
+
+        <a class="nav-item {% if endpoint.startswith('query_') %}active{% endif %}" href="{{ url_for('query_menu') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
+            <span>Consultas</span>
+        </a>
+
+        <a class="nav-item {% if endpoint == 'financial_report' %}active{% endif %}" href="{{ url_for('financial_report') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>
+            <span>Relatórios</span>
+        </a>
+    </nav>
+</aside>
+
+<div class="app-page">
+    <header class="topbar">
+        <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Abrir menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+        <form class="global-search" action="{{ url_for('patients') }}" method="get">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" name="busca" placeholder="Buscar paciente..." aria-label="Buscar paciente">
+        </form>
+
+        <div class="user-chip">
+            <span class="user-avatar">A</span>
+            <span class="user-copy">
+                <strong>{{ session.get('user', 'admin') }}</strong>
+                <small>Administrador</small>
+            </span>
+            <form action="{{ url_for('logout') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="logout-button" type="submit" title="Sair">Sair</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="content">
+{% else %}
+    <main class="auth-main">
+{% endif %}
+
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div role="status" class="notice {{ category }}">{{ message }}</div>
+        {% endfor %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+{% if session.get('user') %}
+    <footer class="app-footer">Movimento Vital Fisioterapia · Laboratório de Banco de Dados</footer>
+</div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<script>
+(function () {
+    const body = document.body;
+    const button = document.getElementById('mobileMenuButton');
+    const overlay = document.getElementById('sidebarOverlay');
+    button?.addEventListener('click', () => body.classList.add('sidebar-open'));
+    overlay?.addEventListener('click', () => body.classList.remove('sidebar-open'));
+})();
+</script>
+{% endif %}
+</body>
+</html>

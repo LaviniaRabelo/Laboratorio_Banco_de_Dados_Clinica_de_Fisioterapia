@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Consultas parametrizadas</h1>
+
+<p class="muted">
+    Escolha uma das consultas exigidas na Etapa 2.
+</p>
+
+<div class="grid">
+    <div class="card">
+        <h2>Atendimentos por período</h2>
+        <p>
+            Filtra por período e status, reunindo paciente, fisioterapeuta,
+            sala, quantidade de procedimentos e valor total do atendimento.
+        </p>
+        <a href="{{ url_for('query_appointments') }}">
+            Abrir consulta
+        </a>
+    </div>
+
+    <div class="card">
+        <h2>Produção por fisioterapeuta</h2>
+        <p>
+            Filtra por período e especialidade e consolida atendimentos,
+            procedimentos e valor realizado por fisioterapeuta.
+        </p>
+        <a href="{{ url_for('query_productivity') }}">
+            Abrir consulta
+        </a>
+    </div>
+</div>
+
+{% endblock %}

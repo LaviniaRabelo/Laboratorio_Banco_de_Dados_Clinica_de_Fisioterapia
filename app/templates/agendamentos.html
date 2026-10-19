@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="actions">
+    <div>
+        <h1>Agendamentos</h1>
+        <p class="muted">
+            Consulte os horários da clínica e marque novos atendimentos.
+        </p>
+    </div>
+
+    <a href="{{ url_for('new_appointment') }}">
+        + Novo agendamento
+    </a>
+</div>
+
+<form method="get" class="card">
+    <label for="status">Filtrar por status</label>
+
+    <div class="actions">
+        <select id="status" name="status">
+            <option value="" {% if status == '' %}selected{% endif %}>Todos</option>
+            <option value="agendado" {% if status == 'agendado' %}selected{% endif %}>Agendados</option>
+            <option value="realizado" {% if status == 'realizado' %}selected{% endif %}>Realizados</option>
+            <option value="cancelado" {% if status == 'cancelado' %}selected{% endif %}>Cancelados</option>
+        </select>
+        <button type="submit">Filtrar</button>
+    </div>
+</form>
+
+{% if not appointments %}
+    <div class="card">Nenhum agendamento encontrado.</div>
+{% else %}
+    <div class="card">
+        <table>
+            <thead><tr><th>ID</th><th>Paciente</th><th>Fisioterapeuta</th><th>Sala</th><th>Início</th><th>Fim</th><th>Procedimentos</th><th>Status</th><th>Valor</th><th>Ação</th></tr></thead>
+            <tbody>
+                {% for item in appointments %}
+                    <tr>
+                        <td>{{ item.id_agendamento }}</td>
+                        <td>{{ item.paciente }}</td>
+                        <td>{{ item.fisioterapeuta }}</td>
+                        <td>{{ item.numero_sala }}</td>
+                        <td>{{ item.data_hora_inicio.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ item.data_hora_fim.strftime('%H:%M') }}</td>
+                        <td>{{ item.procedimentos or '—' }}</td>
+                        <td>{{ item.status }}</td>
+                        <td>R$ {{ '%.2f'|format(item.valor_total or 0) }}</td>
+                        <td>
+                            {% if item.status == 'agendado' %}
+                                <form method="post" action="{{ url_for('cancel_appointment', appointment_id=item.id_agendamento) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit">Cancelar</button>
+                                </form>
+                            {% else %}—{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+{% endblock %}

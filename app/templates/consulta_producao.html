@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<a href="{{ url_for('query_menu') }}">← Voltar para consultas</a>
+
+<h1>Produção por fisioterapeuta</h1>
+
+<p class="muted">
+    Considera apenas atendimentos com status realizado.
+</p>
+
+{% if errors %}
+    <div class="notice error" role="alert">
+        <strong>Confira os filtros:</strong>
+        <ul>
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<form method="get" class="card">
+    <div class="grid">
+        <div>
+            <label for="data_inicio">Data inicial</label>
+            <input
+                id="data_inicio"
+                name="data_inicio"
+                type="text"
+                maxlength="10"
+                inputmode="numeric"
+                placeholder="DD/MM/AAAA"
+                value="{{ data_inicio }}"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="data_fim">Data final</label>
+            <input
+                id="data_fim"
+                name="data_fim"
+                type="text"
+                maxlength="10"
+                inputmode="numeric"
+                placeholder="DD/MM/AAAA"
+                value="{{ data_fim }}"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="especialidade">Especialidade</label>
+            <select id="especialidade" name="especialidade">
+                <option value="0" {% if specialty_id == 0 %}selected{% endif %}>Todas</option>
+                {% for specialty in specialties %}
+                    <option value="{{ specialty.id_especialidade }}" {% if specialty_id == specialty.id_especialidade %}selected{% endif %}>{{ specialty.nome_especialidade }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button type="submit">Consultar</button>
+    </div>
+</form>
+
+<div class="card">
+    {% if rows %}
+        <table>
+            <thead><tr><th>Fisioterapeuta</th><th>Atendimentos</th><th>Procedimentos</th><th>Valor realizado</th></tr></thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row.fisioterapeuta }}</td>
+                        <td>{{ row.quantidade_atendimentos }}</td>
+                        <td>{{ row.quantidade_procedimentos }}</td>
+                        <td>R$ {{ '%.2f'|format(row.valor_total)|replace('.', ',') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% elif not errors %}
+        <p>Nenhum atendimento realizado foi encontrado para os filtros informados.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

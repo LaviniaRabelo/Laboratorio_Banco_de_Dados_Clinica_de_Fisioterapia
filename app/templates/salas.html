@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="actions">
+    <div>
+        <h1>Salas</h1>
+        <p class="muted">
+            Cadastro de salas e equipamentos disponíveis.
+        </p>
+    </div>
+
+    <a href="{{ url_for('edit_room') }}">
+        + Nova sala
+    </a>
+</div>
+
+{% if not rooms %}
+    <div class="card">
+        Nenhuma sala cadastrada.
+    </div>
+{% else %}
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sala</th>
+                    <th>Capacidade</th>
+                    <th>Equipamentos</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for room in rooms %}
+                    <tr>
+                        <td>{{ room.id_sala }}</td>
+                        <td>{{ room.numero_sala }}</td>
+                        <td>{{ room.capacidade }}</td>
+                        <td>{{ room.equipamentos or 'Nenhum' }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_room', room_id=room.id_sala) }}">
+                                Editar
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{{ url_for('delete_room', room_id=room.id_sala) }}"
+                                style="display:inline"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
+
+                                <button type="submit">
+                                    Excluir
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,81 @@
+.autocomplete-field {
+    position: relative;
+}
+
+.autocomplete-results {
+    position: absolute;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    top: calc(100% - 1.1rem);
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid #b8cfca;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.14);
+}
+
+.autocomplete-option {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 0.9rem;
+    border: 0;
+    border-bottom: 1px solid #edf2f1;
+    background: #ffffff;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.autocomplete-option:last-child { border-bottom: 0; }
+.autocomplete-option:hover,
+.autocomplete-option:focus { background: #edf8f5; outline: none; }
+.autocomplete-option span { color: #58716d; font-size: 0.92rem; }
+.procedure-grid { align-items: stretch; }
+.procedure-option { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.85rem; border: 1px solid #d8e4e1; border-radius: 12px; background: #ffffff; }
+.card-soft { margin-top: 1.25rem; padding: 1rem; border: 1px solid #d8e4e1; border-radius: 14px; background: #f8fbfa; }
+.availability-picker { display: grid; gap: 0.75rem; }
+.actions-inline { display: flex; align-items: center; flex-wrap: wrap; gap: 0.8rem; }
+.secondary-button,.icon-button,.time-button,.calendar-day { font: inherit; }
+.secondary-button { width: fit-content; padding: 0.7rem 1rem; border: 1px solid #8eb6af; border-radius: 10px; background: #ffffff; color: #075f58; cursor: pointer; }
+.secondary-button:disabled { cursor: not-allowed; opacity: 0.45; }
+.availability-dialog { width: min(760px, calc(100vw - 2rem)); max-height: 88vh; padding: 0; border: 0; border-radius: 18px; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24); }
+.availability-dialog::backdrop { background: rgba(0, 0, 0, 0.45); }
+.calendar-modal { padding: 1.4rem; }
+.calendar-header,.calendar-nav,.calendar-legend { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.calendar-header h2 { margin: 0; }
+.icon-button { border: 0; background: transparent; font-size: 2rem; line-height: 1; cursor: pointer; }
+.calendar-nav { margin: 1rem 0; }
+.calendar-legend { justify-content: flex-start; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.legend-dot { display: inline-block; width: 0.85rem; height: 0.85rem; border-radius: 50%; margin-right: 0.35rem; }
+.legend-dot.available { background: #2e9f5b; }
+.legend-dot.unavailable { background: #c94b4b; }
+.calendar-weekdays,.calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.45rem; }
+.calendar-weekdays { margin-bottom: 0.45rem; text-align: center; font-weight: 700; }
+.calendar-empty { min-height: 2.9rem; }
+.calendar-day { min-height: 3rem; border: 0; border-radius: 10px; font-weight: 700; }
+.calendar-day.available { background: #d9f3e2; color: #145b30; cursor: pointer; }
+.calendar-day.available:hover,.calendar-day.available.selected { outline: 3px solid #2e9f5b; }
+.calendar-day.unavailable { background: #f6dada; color: #8a2e2e; cursor: not-allowed; opacity: 0.82; }
+.calendar-status { min-height: 1.5rem; margin: 0.8rem 0; }
+.time-buttons { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.time-button { padding: 0.65rem 0.9rem; border: 1px solid #0b756b; border-radius: 10px; background: #ffffff; color: #075f58; cursor: pointer; font-weight: 700; }
+.time-button:hover { background: #e9f6f3; }
+.payment-choice { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.9rem; border: 1px solid #d8e4e1; border-radius: 12px; }
+.payment-box,.insurance-box { margin-top: 1rem; }
+.payment-methods { display: flex; flex-wrap: wrap; gap: 0.55rem; }
+.payment-methods span { display: inline-block; padding: 0.45rem 0.7rem; border: 1px solid #9bbdb7; border-radius: 999px; background: #ffffff; }
+.inline-details { margin: 0.9rem 0; padding: 0.85rem; border: 1px solid #d8e4e1; border-radius: 12px; background: #f8fbfa; }
+.compact-grid { margin: 0.8rem 0; }
+.notice.warning { border-color: #e0bd74; background: #fff8e8; }
+[hidden] { display: none !important; }
+@media (max-width: 640px) {
+    .calendar-nav { align-items: stretch; flex-direction: column; }
+    .calendar-weekdays,.calendar-grid { gap: 0.25rem; }
+    .calendar-day { min-height: 2.5rem; }
+    .autocomplete-option { flex-direction: column; gap: 0.2rem; }
+}

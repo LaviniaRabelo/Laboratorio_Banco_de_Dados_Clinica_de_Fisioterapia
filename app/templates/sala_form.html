@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<a href="{{ url_for('rooms') }}">
+    ← Voltar para salas
+</a>
+
+<h1>
+    {{ 'Editar sala' if room_id else 'Nova sala' }}
+</h1>
+
+<p>Os campos com * são obrigatórios.</p>
+
+{% if errors %}
+    <div class="notice error" role="alert">
+        <strong>Confira os dados:</strong>
+
+        <ul>
+            {% for error in errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<form method="post" class="card">
+
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
+
+    <h2>Dados da sala</h2>
+
+    <div class="grid">
+        <div>
+            <label for="numero_sala">
+                Número/identificação *
+            </label>
+
+            <input
+                id="numero_sala"
+                name="numero_sala"
+                value="{{ room.numero_sala or '' }}"
+                maxlength="10"
+                required
+            >
+        </div>
+
+        <div>
+            <label for="capacidade">
+                Capacidade *
+            </label>
+
+            <input
+                id="capacidade"
+                name="capacidade"
+                type="number"
+                min="1"
+                max="32767"
+                value="{{ room.capacidade or '' }}"
+                required
+            >
+        </div>
+    </div>
+
+    <h2>Equipamentos</h2>
+
+    <label for="equipamentos">
+        Equipamentos disponíveis
+    </label>
+
+    <input
+        id="equipamentos"
+        name="equipamentos"
+        value="{{ room.equipamentos_texto or '' }}"
+        placeholder="Ex.: Maca, Bola suíça, Halteres"
+    >
+
+    <p class="muted">
+        Separe os equipamentos por vírgula.
+    </p>
+
+    <div class="actions">
+        <button type="submit">
+            Salvar sala
+        </button>
+
+        <a href="{{ url_for('rooms') }}">
+            Cancelar
+        </a>
+    </div>
+
+</form>
+
+{% endblock %}
