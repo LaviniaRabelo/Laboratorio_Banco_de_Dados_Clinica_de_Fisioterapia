@@ -1,12 +1,10 @@
 # Clínica de Fisioterapia — Clínica Movimento Vital
 
-Projeto Final da disciplina **Laboratório de Banco de Dados (GPE17M40083)**  
+Projeto Final da disciplina **Laboratório de Banco de Dados **  
 Bacharelado em Engenharia de Software — Universidade Católica de Brasília (UCB)
 
 **Professor:** Samuel Novais Moura Júnior  
 **Semestre:** 2026/2
-
-> A aplicação utiliza a identidade visual **Clínica Movimento Vital**. O domínio acadêmico permanece sendo **Clínica de Fisioterapia**.
 
 ## Equipe
 
