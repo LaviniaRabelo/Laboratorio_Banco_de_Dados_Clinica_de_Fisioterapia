@@ -5,9 +5,11 @@ DROP USER IF EXISTS 'admin_clinica'@'localhost';
 DROP USER IF EXISTS 'fisioterapeuta'@'localhost';
 DROP USER IF EXISTS 'recepcionista'@'localhost';
 
-CREATE USER 'admin_clinica'@'localhost' IDENTIFIED BY 'admin123';
-CREATE USER 'fisioterapeuta'@'localhost' IDENTIFIED BY 'fisio123';
-CREATE USER 'recepcionista'@'localhost' IDENTIFIED BY 'recepcao123';
+-- IMPORTANTE: substitua as senhas de exemplo localmente antes de executar.
+-- Não versionar senhas reais no GitHub.
+CREATE USER 'admin_clinica'@'localhost' IDENTIFIED BY 'ALTERE_ESTA_SENHA_ADMIN';
+CREATE USER 'fisioterapeuta'@'localhost' IDENTIFIED BY 'ALTERE_ESTA_SENHA_FISIO';
+CREATE USER 'recepcionista'@'localhost' IDENTIFIED BY 'ALTERE_ESTA_SENHA_RECEPCAO';
 
 -- view para esconder os dados da evolucao clinica (LGPD)
 DROP VIEW IF EXISTS vw_historico_pacientes;
@@ -25,6 +27,7 @@ JOIN profissional f ON e.id_fisioterapeuta_responsavel = f.id_profissional;
 GRANT SELECT, INSERT, UPDATE ON clinica_fisioterapia.paciente TO 'recepcionista'@'localhost';
 GRANT SELECT, INSERT, UPDATE ON clinica_fisioterapia.agendamento TO 'recepcionista'@'localhost';
 GRANT SELECT ON clinica_fisioterapia.procedimento TO 'recepcionista'@'localhost';
+
 -- permissoes do fisioterapeuta (acessa a view no lugar da tabela original)
 GRANT SELECT ON clinica_fisioterapia.paciente TO 'fisioterapeuta'@'localhost';
 GRANT SELECT ON clinica_fisioterapia.agendamento TO 'fisioterapeuta'@'localhost';
@@ -32,7 +35,6 @@ GRANT SELECT, INSERT, UPDATE ON clinica_fisioterapia.vw_historico_pacientes TO '
 
 -- permissao total pro admin
 GRANT ALL PRIVILEGES ON clinica_fisioterapia.* TO 'admin_clinica'@'localhost';
-
 
 -- tabela pra guardar historico de preco de procedimento
 DROP TABLE IF EXISTS audita_procedimento;
