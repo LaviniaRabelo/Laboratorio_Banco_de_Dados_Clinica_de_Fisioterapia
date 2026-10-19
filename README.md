@@ -52,11 +52,11 @@ A aplicação foi desenvolvida em **Python/Flask**, integrada ao **MySQL 8**, e 
 - auditoria por gatilhos;
 - teste de `COMMIT` e `ROLLBACK`;
 - backup e restauração em banco separado;
-- estudos de desempenho com índices e `EXPLAIN`.
+- experimentos de concorrência e desempenho documentados no relatório final conforme as evidências coletadas pela equipe.
 
 ## Correções da Etapa 1 incorporadas
 
-A versão final incorpora as observações recebidas na primeira etapa, incluindo:
+A revisão do projeto contempla as observações recebidas na primeira etapa, incluindo:
 
 - alinhamento de `FORMA_PAGAMENTO` entre MER, dicionário, modelo lógico e banco;
 - inclusão de `RATEIO_ITEM` e `PAGAMENTO`;
@@ -80,10 +80,10 @@ A versão final incorpora as observações recebidas na primeira etapa, incluind
 - VS Code
 - MySQL Workbench
 
-## Estrutura final esperada
+## Estrutura do repositório
 
 ```text
-clinica-fisioterapia/
+Laboratorio_Banco_de_Dados_Clinica_de_Fisioterapia/
 ├── README.md
 ├── .gitignore
 ├── .env.example
@@ -92,6 +92,7 @@ clinica-fisioterapia/
 │   ├── 02_carga.sql
 │   ├── 03_consultas.sql
 │   ├── 04_financeiro.sql
+│   ├── 05_acesso_aplicacao.sql
 │   └── demais scripts da Etapa 2
 ├── app/
 │   ├── app.py
@@ -102,11 +103,11 @@ clinica-fisioterapia/
 │   ├── templates/
 │   └── static/
 └── docs/
-    ├── relatorio-final.pdf
-    ├── mer-revisado.pdf
-    ├── modelo-logico-revisado.pdf
+    ├── relatorio-etapa1.pdf
     └── evidencias/
 ```
+
+Os artefatos finais revisados, como relatório consolidado, MER revisado e evidências da Etapa 2, devem ser acrescentados à pasta `docs/` antes da entrega definitiva.
 
 ## Como clonar
 
@@ -154,7 +155,7 @@ DB_PORT=3306
 DB_NAME=clinica_fisioterapia
 DB_USER=SEU_USUARIO_DO_BANCO
 DB_PASSWORD=SUA_SENHA_DO_BANCO
-APP_USERNAME=admin
+APP_USER=admin
 APP_PASSWORD_HASH=SEU_HASH_DE_SENHA
 SECRET_KEY=SUA_CHAVE_SECRETA
 ```
