@@ -181,6 +181,10 @@ Normalmente a aplicação ficará disponível em:
 ```text
 http://127.0.0.1:5000
 ```
+## Acesso à aplicação
+
+**Usuário:** `admin`  
+**Senha:** `Clinica@2026`
 
 ## Segurança
 
