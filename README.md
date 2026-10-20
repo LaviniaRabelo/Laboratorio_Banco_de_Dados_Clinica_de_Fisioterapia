@@ -171,15 +171,22 @@ Depois, inicie com:
 
 ### Configuração manual
 
+Se quiser que o próprio projeto gere o `.env` e o hash da senha:
+
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-copy ..\.env.example .env
 python configurar.py
 ```
 
-> Se você já copiou manualmente `.env.example` para `.env`, edite o `.env` com valores válidos; `configurar.py` não sobrescreve um `.env` existente.
+Como alternativa, copie o modelo e preencha o arquivo manualmente:
+
+```powershell
+copy ..\.env.example .env
+```
+
+Nesse segundo caso, edite `app/.env` com valores válidos. Não execute `configurar.py` depois de criar manualmente o `.env`, pois ele não sobrescreve um arquivo já existente.
 
 O `.env` real **não deve ser versionado**. O arquivo público `.env.example` contém apenas placeholders.
 
