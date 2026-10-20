@@ -1,6 +1,6 @@
 # Clínica de Fisioterapia — Clínica Movimento Vital
 
-Projeto Final da disciplina **Laboratório de Banco de Dados **  
+Projeto Final da disciplina **Laboratório de Banco de Dados**  
 Bacharelado em Engenharia de Software — Universidade Católica de Brasília (UCB)
 
 **Professor:** Samuel Novais Moura Júnior  
@@ -101,8 +101,12 @@ Laboratorio_Banco_de_Dados_Clinica_de_Fisioterapia/
 │   ├── templates/
 │   └── static/
 └── docs/
-    ├── relatorio-etapa1.pdf
-    └── evidencias/
+    ├── relatorio-final.pdf
+    └── mer-revisado.pdf
+    ├── modelo-logico-revisado.pdf.pdf
+    └── relatorio-etapa1.pdf
+    ├── evidencias/
+
 ```
 
 Os artefatos finais revisados, como relatório consolidado, MER revisado e evidências da Etapa 2, devem ser acrescentados à pasta `docs/` antes da entrega definitiva.
@@ -122,6 +126,8 @@ Execute os scripts na ordem definida na entrega final. A sequência básica é:
 mysql -u root -p < sql/01_ddl.sql
 mysql -u root -p clinica_fisioterapia < sql/02_carga.sql
 mysql -u root -p clinica_fisioterapia < sql/04_financeiro.sql
+mysql -u root -p clinica_fisioterapia < sql/scripts_etapa2.sql
+mysql -u root -p clinica_fisioterapia < sql/05_acesso_aplicacao.sql
 mysql -u root -p clinica_fisioterapia < sql/03_consultas.sql
 ```
 
@@ -192,4 +198,4 @@ A documentação final consolida a Etapa 1 revisada e a Etapa 2, incluindo trans
 
 ## Uso de inteligência artificial
 
-O uso de ferramentas de IA está declarado no relatório, conforme o enunciado da disciplina. Todo código, consulta e decisão utilizados na entrega devem ser executados, revisados e compreendidos pela equipe.
+O uso de ferramentas de IA está declarado no relatório, conforme o enunciado da disciplina. Todo o código, as consultas e as decisões utilizadas na entrega foram revisados, executados e compreendidos pela equipe.
