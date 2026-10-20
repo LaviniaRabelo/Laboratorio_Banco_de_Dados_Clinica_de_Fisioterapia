@@ -1,6 +1,6 @@
 # Clínica de Fisioterapia — Clínica Movimento Vital
 
-Projeto Final da disciplina **Laboratório de Banco de Dados**  
+Projeto Final da disciplina **Laboratório de Banco de Dados (GPE17M40083)**  
 Bacharelado em Engenharia de Software — Universidade Católica de Brasília (UCB)
 
 **Professor:** Samuel Novais Moura Júnior  
@@ -20,9 +20,11 @@ Bacharelado em Engenharia de Software — Universidade Católica de Brasília (U
 
 O sistema modela e implementa uma clínica de fisioterapia com atendimentos particulares e conveniados. O domínio inclui pacientes, profissionais, especialidades, salas, procedimentos, agendamentos, convênios, coberturas, evolução clínica e, na Etapa 2, rateio financeiro e pagamentos.
 
-A aplicação foi desenvolvida em **Python/Flask**, integrada ao **MySQL 8**, e serve como instrumento para demonstrar CRUDs, consultas parametrizadas, relatório por `VIEW`, transações, integridade, segurança, auditoria, concorrência, índices, backup e restauração.
+A aplicação foi desenvolvida em **Python/Flask**, integrada ao **MySQL 8**, e é utilizada para demonstrar CRUDs, consultas parametrizadas, relatório por `VIEW`, transações, integridade, segurança, auditoria, concorrência, índices, backup e restauração.
 
-## Principais requisitos atendidos
+A identidade visual da aplicação é **Clínica Movimento Vital**; o domínio acadêmico do projeto permanece **Clínica de Fisioterapia**.
+
+## Principais artefatos
 
 ### Etapa 1
 
@@ -37,24 +39,25 @@ A aplicação foi desenvolvida em **Python/Flask**, integrada ao **MySQL 8**, e 
 
 ### Etapa 2
 
-- CRUD completo de Pacientes, Salas, Procedimentos e Convênios;
+- aplicação web em Python/Flask;
+- CRUDs de Pacientes, Salas, Procedimentos e Convênios;
 - duas consultas parametrizadas com junção e agregação;
 - relatório financeiro alimentado por `vw_financeiro_agendamento`;
 - operação multitabela em transação;
 - tratamento de erros de integridade;
-- SQL parametrizado e resistência a SQL Injection;
+- SQL parametrizado e teste de resistência a SQL Injection;
 - credenciais fora do código-fonte;
 - senha da aplicação armazenada por hash;
-- três perfis de acesso no MySQL;
-- `VIEW` restritiva;
-- auditoria por gatilhos;
+- três perfis de acesso no MySQL e `VIEW` restritiva;
+- auditoria de Paciente e Agendamento;
 - teste de `COMMIT` e `ROLLBACK`;
-- backup e restauração em banco separado;
-- experimentos de concorrência e desempenho documentados no relatório final conforme as evidências coletadas pela equipe.
+- roteiro de concorrência com duas sessões;
+- roteiro para três estudos de `EXPLAIN`/índices;
+- backup e restauração em banco separado.
 
 ## Correções da Etapa 1 incorporadas
 
-A revisão do projeto contempla as observações recebidas na primeira etapa, incluindo:
+A revisão contempla as observações recebidas na primeira etapa, incluindo:
 
 - alinhamento de `FORMA_PAGAMENTO` entre MER, dicionário, modelo lógico e banco;
 - inclusão de `RATEIO_ITEM` e `PAGAMENTO`;
@@ -63,7 +66,8 @@ A revisão do projeto contempla as observações recebidas na primeira etapa, in
 - aprofundamento da análise de 3FN/BCNF;
 - inclusão completa dos atributos de endereço de Paciente;
 - justificativa da entidade fraca `EVOLUCAO`;
-- revisão da coerência entre fisioterapeutas, especialidades, procedimentos e vínculos de convênio.
+- revisão da coerência entre fisioterapeutas, especialidades, procedimentos e vínculos de convênio;
+- substituição da antiga Q07 por uma consulta distinta da Q05.
 
 ## Tecnologias
 
@@ -90,8 +94,12 @@ Laboratorio_Banco_de_Dados_Clinica_de_Fisioterapia/
 │   ├── 02_carga.sql
 │   ├── 03_consultas.sql
 │   ├── 04_financeiro.sql
-│   ├── 05_acesso_aplicacao.sql
-│   └── demais scripts da Etapa 2
+│   ├── 05_triggers_regras.sql
+│   ├── 06_auditoria.sql
+│   ├── 07_seguranca_roles.sql
+│   ├── 08_indices_explain.sql
+│   ├── 09_acesso_aplicacao.sql
+│   └── 10_teste_concorrencia.sql
 ├── app/
 │   ├── app.py
 │   ├── requirements.txt
@@ -101,15 +109,12 @@ Laboratorio_Banco_de_Dados_Clinica_de_Fisioterapia/
 │   ├── templates/
 │   └── static/
 └── docs/
-    ├── relatorio-final.pdf
-    └── mer-revisado.pdf
-    ├── modelo-logico-revisado.pdf.pdf
-    └── relatorio-etapa1.pdf
-    ├── evidencias/
-
+    ├── Relatorio Clinica de Fisioterapia.pdf
+    ├── relatorio-etapa1.pdf
+    └── evidencias/
 ```
 
-Os artefatos finais revisados, como relatório consolidado, MER revisado e evidências da Etapa 2, devem ser acrescentados à pasta `docs/` antes da entrega definitiva.
+> O arquivo `Relatorio Clinica de Fisioterapia.pdf` é a versão consolidada atualmente versionada. Antes da entrega definitiva, a equipe deve substituir/renomear essa versão somente depois de fechar as evidências pendentes e acrescentar o MER revisado, o modelo lógico revisado e as evidências finais em `docs/`.
 
 ## Como clonar
 
@@ -118,20 +123,27 @@ git clone https://github.com/LaviniaRabelo/Laboratorio_Banco_de_Dados_Clinica_de
 cd Laboratorio_Banco_de_Dados_Clinica_de_Fisioterapia
 ```
 
-## Banco de dados
+## Reconstrução do banco
 
-Execute os scripts na ordem definida na entrega final. A sequência básica é:
+Os scripts de construção devem ser executados nesta ordem:
 
 ```bash
 mysql -u root -p < sql/01_ddl.sql
 mysql -u root -p clinica_fisioterapia < sql/02_carga.sql
 mysql -u root -p clinica_fisioterapia < sql/04_financeiro.sql
-mysql -u root -p clinica_fisioterapia < sql/scripts_etapa2.sql
-mysql -u root -p clinica_fisioterapia < sql/05_acesso_aplicacao.sql
+mysql -u root -p clinica_fisioterapia < sql/05_triggers_regras.sql
+mysql -u root -p clinica_fisioterapia < sql/06_auditoria.sql
+mysql -u root -p clinica_fisioterapia < sql/07_seguranca_roles.sql
+mysql -u root -p clinica_fisioterapia < sql/09_acesso_aplicacao.sql
 mysql -u root -p clinica_fisioterapia < sql/03_consultas.sql
 ```
 
-Depois, execute os scripts adicionais de triggers, auditoria, segurança e índices usados na Etapa 2.
+Os arquivos abaixo são roteiros de **teste/evidência**, e não fazem parte da reconstrução básica:
+
+- `sql/08_indices_explain.sql` — três estudos de desempenho. Execute em ambiente de teste e registre os planos e tempos reais antes/depois dos índices.
+- `sql/10_teste_concorrencia.sql` — roteiro para duas sessões independentes do MySQL Workbench.
+
+Os comandos que criam usuários utilizam `IDENTIFIED BY RANDOM PASSWORD`; guarde as senhas retornadas apenas localmente e não as versione.
 
 ## Configuração da aplicação
 
@@ -141,65 +153,63 @@ Entre na pasta da aplicação:
 cd app
 ```
 
-Crie o ambiente virtual e instale as dependências:
+### Opção recomendada no Windows
+
+Execute:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+.\configurar.bat
 ```
 
-Crie o arquivo `.env` a partir do `.env.example`. O `.env` real **não deve ser versionado**.
+O script cria `.venv`, instala as dependências e chama `configurar.py`, que cria o arquivo local `app/.env` com a conexão do MySQL, hash da senha da aplicação e uma `SECRET_KEY` aleatória.
 
-Exemplo:
-
-```env
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=clinica_fisioterapia
-DB_USER=SEU_USUARIO_DO_BANCO
-DB_PASSWORD=SUA_SENHA_DO_BANCO
-APP_USER=admin
-APP_PASSWORD_HASH=SEU_HASH_DE_SENHA
-SECRET_KEY=SUA_CHAVE_SECRETA
-```
-
-Inicie a aplicação com:
+Depois, inicie com:
 
 ```powershell
 .\iniciar.bat
 ```
 
-ou:
+### Configuração manual
 
-```bash
-python app.py
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy ..\.env.example .env
+python configurar.py
 ```
 
-Normalmente a aplicação ficará disponível em:
+> Se você já copiou manualmente `.env.example` para `.env`, edite o `.env` com valores válidos; `configurar.py` não sobrescreve um `.env` existente.
+
+O `.env` real **não deve ser versionado**. O arquivo público `.env.example` contém apenas placeholders.
+
+A aplicação normalmente ficará disponível em:
 
 ```text
 http://127.0.0.1:5000
 ```
-## Acesso à aplicação
+
+## Acesso à aplicação usado na demonstração da equipe
 
 **Usuário:** `admin`  
 **Senha:** `Clinica@2026`
 
+Essas credenciais são apenas do login da aplicação acadêmica. Em uma reconstrução nova, `configurar.py` permite escolher outro usuário e outra senha. Elas não substituem as credenciais do MySQL.
+
 ## Segurança
 
-A aplicação possui autenticação própria e o banco possui perfis separados de acesso. As credenciais reais devem permanecer fora do repositório. O projeto utiliza princípio do menor privilégio, `VIEW` restritiva e auditoria de alterações relevantes.
+A aplicação possui autenticação própria e o banco possui perfis separados de acesso. Credenciais reais do MySQL devem permanecer somente no arquivo local `app/.env`. O repositório ignora `.env`, ambientes virtuais, caches, backups e logs.
 
-Dados de saúde são dados pessoais sensíveis. A carga acadêmica utiliza dados fictícios e a documentação discute os cuidados de acesso compatíveis com a LGPD.
+Dados de saúde são dados pessoais sensíveis. A carga acadêmica utiliza dados fictícios e a documentação discute menor privilégio, `VIEW` restritiva, hash de senha, auditoria e cuidados compatíveis com a LGPD.
 
 ## Backup e restauração
 
-Foi realizado teste de backup e restauração em base separada, comparando registros da base original com a restaurada. O relatório final registra a política de retenção e a estratégia de teste de restauração.
+Foi realizado teste de backup e restauração em base separada, comparando registros da base original com a restaurada. O relatório registra a política de retenção, a estimativa de crescimento e a estratégia de teste de restauração.
 
-## Documentação
+## Evidências antes da entrega final
 
-A documentação final consolida a Etapa 1 revisada e a Etapa 2, incluindo transações, concorrência, segurança, auditoria, otimização, projeto físico, backup e restauração.
+Antes de considerar o projeto encerrado, conferir no relatório e em `docs/evidencias/`: experimento de concorrência com duas conexões distintas e nível de isolamento; três estudos de `EXPLAIN` antes/depois com tempos e volume; segunda evidência de auditoria em Paciente; teste clássico de SQL Injection; MER gráfico revisado; modelo lógico revisado; e atualização do relatório para retirar qualquer indicação de pendência.
 
 ## Uso de inteligência artificial
 
-O uso de ferramentas de IA está declarado no relatório, conforme o enunciado da disciplina. Todo o código, as consultas e as decisões utilizadas na entrega foram revisados, executados e compreendidos pela equipe.
+O uso de ferramentas de IA deve ser declarado no relatório conforme o enunciado da disciplina, incluindo todas as ferramentas efetivamente utilizadas. Todo código, consulta e decisão incluídos na entrega deve ser executado, revisado e compreendido pela equipe.
