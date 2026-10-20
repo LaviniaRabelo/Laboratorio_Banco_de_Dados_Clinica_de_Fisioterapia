@@ -1,10 +1,12 @@
 -- ============================================================================
 -- 03_CONSULTAS.SQL — CONSULTAS DE VERIFICAÇÃO
 -- Clínica de Fisioterapia | MySQL 8.0+
+-- Total: 15 consultas, distribuídas em 5 básicas, 5 de junções/agregação
+-- e 5 avançadas, conforme A8 do enunciado.
 -- ============================================================================
 
 -- ============================================================================
--- BÁSICAS 
+-- BÁSICAS (5)
 -- ============================================================================
 
 -- Q01 — Pergunta de negócio:
@@ -49,7 +51,7 @@ WHERE c.id_convenio IS NULL
 ORDER BY p.nome;
 
 -- ============================================================================
--- JUNÇÕES E AGREGAÇÃO 
+-- JUNÇÕES E AGREGAÇÃO (5)
 -- ============================================================================
 
 -- Q06 — Pergunta de negócio:
@@ -67,14 +69,16 @@ WHERE DATE(a.data_hora_inicio) = '2026-06-15'
 ORDER BY a.data_hora_inicio;
 
 -- Q07 — Pergunta de negócio:
--- Qual é o convênio ativo de cada paciente, incluindo quem não possui convênio ativo?
-SELECT p.nome AS paciente, c.nome_convenio
-FROM paciente p
-LEFT JOIN vinculo_convenio vc
-       ON vc.id_paciente = p.id_paciente
-      AND vc.data_fim IS NULL
-LEFT JOIN convenio c ON c.id_convenio = vc.id_convenio
-ORDER BY p.nome;
+-- Quais convênios oferecem maior cobertura média e quantos procedimentos
+-- distintos possuem cobertura cadastrada?
+-- A consulta é propositalmente diferente da Q05 e usa LEFT JOIN + agregação.
+SELECT c.nome_convenio,
+       COUNT(DISTINCT cob.id_procedimento) AS procedimentos_cobertos,
+       ROUND(AVG(cob.percentual_cobertura), 2) AS cobertura_media_percentual
+FROM convenio c
+LEFT JOIN cobertura cob ON cob.id_convenio = c.id_convenio
+GROUP BY c.id_convenio, c.nome_convenio
+ORDER BY cobertura_media_percentual DESC, c.nome_convenio;
 
 -- Q08 — Pergunta de negócio:
 -- Quais fisioterapeutas realizaram mais de 10 atendimentos?
@@ -111,7 +115,7 @@ GROUP BY s.numero_sala
 ORDER BY atendimentos_realizados DESC;
 
 -- ============================================================================
--- AVANÇADAS
+-- AVANÇADAS (5)
 -- ============================================================================
 
 -- Q11 — Pergunta de negócio:
@@ -246,9 +250,6 @@ SELECT 'conflito_sala' AS tipo,
 FROM agendamento a1
 JOIN agendamento a2
   ON a1.id_sala = a2.id_sala
- AND a1.id_agendamento < a2.id_agendamento
-WHERE a1.data_hora_inicio < a2.data_hora_fim
-  AND a2.data_hora_inicio < a1.data_hora_fim;
  AND a1.id_agendamento < a2.id_agendamento
 WHERE a1.data_hora_inicio < a2.data_hora_fim
   AND a2.data_hora_inicio < a1.data_hora_fim;
