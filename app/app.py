@@ -448,6 +448,32 @@ def create_app(test_config=None):
         )
 
 
+    @app.post('/pacientes/<int:patient_id>/excluir')
+    @protected
+    def delete_patient(patient_id):
+        fetch_patient(patient_id)
+
+        try:
+            with db().cursor() as cur:
+                cur.execute(
+                    'DELETE FROM paciente WHERE id_paciente=%s',
+                    (patient_id,),
+                )
+
+            db().commit()
+            flash('Paciente excluído.', 'success')
+
+        except pymysql.IntegrityError:
+            db().rollback()
+            flash(
+                'Não é possível excluir este paciente porque existem '
+                'agendamentos ou outros registros históricos vinculados.',
+                'error',
+            )
+
+        return redirect(url_for('patients'))
+
+
     @app.get('/salas')
     @protected
     def rooms():
