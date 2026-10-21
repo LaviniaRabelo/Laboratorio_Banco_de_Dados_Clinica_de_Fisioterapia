@@ -230,4 +230,4 @@ As imagens devem ser mantidas junto ao relatório final para que a entrega prese
 
 ## Uso de inteligência artificial
 
-O uso de ferramentas de IA deve ser declarado no relatório conforme o enunciado da disciplina, incluindo todas as ferramentas efetivamente utilizadas. Todo código, consulta e decisão incluídos na entrega deve ser executado, revisado e compreendido pela equipe.
+O uso de ferramentas de IA foi declarado no relatório conforme o enunciado da disciplina, incluindo todas as ferramentas efetivamente utilizadas. Todo código, consulta e decisão incluídos na entrega deve ser executado, revisado e compreendido pela equipe.
