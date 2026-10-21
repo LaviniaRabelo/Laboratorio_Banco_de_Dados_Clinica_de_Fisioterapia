@@ -113,12 +113,7 @@ Laboratorio_Banco_de_Dados_Clinica_de_Fisioterapia/
     ├── Relatorio Clinica de Fisioterapia.pdf
     ├── relatorio-etapa1.pdf
     └── evidencias/
-        ├── evidencia_sql_injection.png
-        ├── evidencia_concorrencia.png
-        ├── evidencia_b4_estudo1.png
-        ├── evidencia_b4_estudo2.png
-        ├── evidencia_b4_estudo3.png
-        └── evidencia_auditoria.png
+        └── README.md
 ```
 
 O relatório consolidado registra a Etapa 1 revisada e a Etapa 2. A versão final em PDF deve permanecer sincronizada com os scripts, o MER e as evidências versionadas no repositório.
@@ -222,13 +217,16 @@ Foi realizado teste de backup e restauração em base separada, comparando regis
 
 ## Evidências concluídas
 
-As evidências finais da Etapa 2 são mantidas em `docs/evidencias/` e incluem:
+Os testes finais já foram executados. O arquivo `docs/evidencias/README.md` descreve o que cada captura comprova e os nomes sugeridos para as imagens:
 
-- tentativa clássica de SQL Injection tratada como texto literal, sem retornar todos os pacientes;
-- concorrência com duas conexões, isolamento `REPEATABLE-READ`, lock wait timeout 1205 e liberação após `COMMIT`;
-- três estudos de desempenho com planos antes/depois;
-- auditoria de alterações, incluindo Paciente;
-- demais capturas e resultados descritos no relatório consolidado.
+- `evidencia_sql_injection.png`;
+- `evidencia_concorrencia.png`;
+- `evidencia_b4_estudo1.png`;
+- `evidencia_b4_estudo2.png`;
+- `evidencia_b4_estudo3.png`;
+- `evidencia_auditoria.png`.
+
+As imagens devem ser mantidas junto ao relatório final para que a entrega preserve tanto os resultados escritos quanto as evidências visuais reais obtidas no Workbench e na aplicação.
 
 ## Uso de inteligência artificial
 
