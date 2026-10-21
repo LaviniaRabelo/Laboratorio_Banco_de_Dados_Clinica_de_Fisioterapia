@@ -45,14 +45,14 @@ A identidade visual da aplicação é **Clínica Movimento Vital**; o domínio a
 - relatório financeiro alimentado por `vw_financeiro_agendamento`;
 - operação multitabela em transação;
 - tratamento de erros de integridade;
-- SQL parametrizado e teste de resistência a SQL Injection;
+- SQL parametrizado e teste clássico de resistência a SQL Injection;
 - credenciais fora do código-fonte;
 - senha da aplicação armazenada por hash;
 - três perfis de acesso no MySQL e `VIEW` restritiva;
 - auditoria de Paciente e Agendamento;
-- teste de `COMMIT` e `ROLLBACK`;
-- roteiro de concorrência com duas sessões;
-- roteiro para três estudos de `EXPLAIN`/índices;
+- testes de `COMMIT` e `ROLLBACK`;
+- experimento de concorrência com duas sessões independentes, bloqueio de linha e timeout 1205;
+- três estudos de desempenho com `EXPLAIN` e `EXPLAIN ANALYZE`;
 - backup e restauração em banco separado.
 
 ## Correções da Etapa 1 incorporadas
@@ -109,12 +109,19 @@ Laboratorio_Banco_de_Dados_Clinica_de_Fisioterapia/
 │   ├── templates/
 │   └── static/
 └── docs/
+    ├── MER.jpg
     ├── Relatorio Clinica de Fisioterapia.pdf
     ├── relatorio-etapa1.pdf
     └── evidencias/
+        ├── evidencia_sql_injection.png
+        ├── evidencia_concorrencia.png
+        ├── evidencia_b4_estudo1.png
+        ├── evidencia_b4_estudo2.png
+        ├── evidencia_b4_estudo3.png
+        └── evidencia_auditoria.png
 ```
 
-> O arquivo `Relatorio Clinica de Fisioterapia.pdf` é a versão consolidada atualmente versionada. Antes da entrega definitiva, a equipe deve substituir/renomear essa versão somente depois de fechar as evidências pendentes e acrescentar o MER revisado, o modelo lógico revisado e as evidências finais em `docs/`.
+O relatório consolidado registra a Etapa 1 revisada e a Etapa 2. A versão final em PDF deve permanecer sincronizada com os scripts, o MER e as evidências versionadas no repositório.
 
 ## Como clonar
 
@@ -138,10 +145,10 @@ mysql -u root -p clinica_fisioterapia < sql/09_acesso_aplicacao.sql
 mysql -u root -p clinica_fisioterapia < sql/03_consultas.sql
 ```
 
-Os arquivos abaixo são roteiros de **teste/evidência**, e não fazem parte da reconstrução básica:
+Os arquivos abaixo documentam e permitem reproduzir testes executados na Etapa 2; eles não fazem parte da reconstrução básica:
 
-- `sql/08_indices_explain.sql` — três estudos de desempenho. Execute em ambiente de teste e registre os planos e tempos reais antes/depois dos índices.
-- `sql/10_teste_concorrencia.sql` — roteiro para duas sessões independentes do MySQL Workbench.
+- `sql/08_indices_explain.sql` — três estudos de desempenho com volume, `EXPLAIN` e `EXPLAIN ANALYZE` antes/depois dos índices. O terceiro estudo utiliza `AUDITORIA_ALTERACAO`, substituindo o antigo teste de `AGENDAMENTO` por paciente/período porque o índice já existente era necessário a uma restrição de chave estrangeira.
+- `sql/10_teste_concorrencia.sql` — experimento com duas sessões independentes, bloqueio da mesma linha de `AGENDAMENTO`, `innodb_lock_wait_timeout = 5`, erro 1205 e nova tentativa após `COMMIT`.
 
 Os comandos que criam usuários utilizam `IDENTIFIED BY RANDOM PASSWORD`; guarde as senhas retornadas apenas localmente e não as versione.
 
@@ -213,9 +220,15 @@ Dados de saúde são dados pessoais sensíveis. A carga acadêmica utiliza dados
 
 Foi realizado teste de backup e restauração em base separada, comparando registros da base original com a restaurada. O relatório registra a política de retenção, a estimativa de crescimento e a estratégia de teste de restauração.
 
-## Evidências antes da entrega final
+## Evidências concluídas
 
-Antes de considerar o projeto encerrado, conferir no relatório e em `docs/evidencias/`: experimento de concorrência com duas conexões distintas e nível de isolamento; três estudos de `EXPLAIN` antes/depois com tempos e volume; segunda evidência de auditoria em Paciente; teste clássico de SQL Injection; MER gráfico revisado; modelo lógico revisado; e atualização do relatório para retirar qualquer indicação de pendência.
+As evidências finais da Etapa 2 são mantidas em `docs/evidencias/` e incluem:
+
+- tentativa clássica de SQL Injection tratada como texto literal, sem retornar todos os pacientes;
+- concorrência com duas conexões, isolamento `REPEATABLE-READ`, lock wait timeout 1205 e liberação após `COMMIT`;
+- três estudos de desempenho com planos antes/depois;
+- auditoria de alterações, incluindo Paciente;
+- demais capturas e resultados descritos no relatório consolidado.
 
 ## Uso de inteligência artificial
 
