@@ -1,6 +1,6 @@
 # Clínica de Fisioterapia — Clínica Movimento Vital
 
-Projeto Final da disciplina **Laboratório de Banco de Dados (GPE17M40083)**  
+Projeto Final da disciplina **Laboratório de Banco de Dados (GPE17M40053)**  
 Bacharelado em Engenharia de Software — Universidade Católica de Brasília (UCB)
 
 **Professor:** Samuel Novais Moura Júnior  
